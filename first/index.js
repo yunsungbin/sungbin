@@ -9,7 +9,7 @@ const gravity = 0.2;
 c.fillRect(0, 0, canvas.width, canvas.height);
 
 class Sprite{
-    constructor({position, velocity, color = "red"}){
+    constructor({position, velocity, color = "red", offset}){
         this.position = position;
 
         this.velocity = velocity;
@@ -20,29 +20,43 @@ class Sprite{
         this.lastKey;
 
         this.attackBox = {
-            position : this.position,
             width : 100,
-            height : 50
+            height : 50,
+            position : {
+                x : this.position.x,
+                y : this.position.y
+            },
+            offset,
         }
 
         this.color = color;
+
+        this.isAttacking;
+
+        this.health = 100;
     }
 
     draw(){
         c.fillStyle = this.color;
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
 
-        c.fillStyle = "green";
+        if(this.isAttacking){
+            c.fillStyle = "green";
             c.fillRect(
                 this.attackBox.position.x,
                 this.attackBox.position.y,
                 this.attackBox.width,
                 this.attackBox.height
             );
+        }
+        
     }
 
     update(){
         this.draw();
+
+        this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
+        this.attackBox.position.y = this.position.y;
 
         this.position.y += this.velocity.y;
 
@@ -55,29 +69,45 @@ class Sprite{
             this.velocity.y += gravity;
         }
     }
+
+    attack(){
+        this.isAttacking = true;
+        setTimeout(() => {
+            this.isAttacking = false;
+        }, 100);
+        // 공격 딜레이 걸기 
+    }
 }
 
 const player = new Sprite({
-    position:{
+    position : {
         x : 0,
         y : 0,
     },
-    velocity:{
+    velocity : {
         x : 0,
         y : 10,
+    },
+    offset : {
+        x : 0,
+        y : 0,
     },
 });
 
 const enemy = new Sprite({
-    position: {
+    position : {
         x : 400,
         y : 100,
     },
-    velocity: {
+    velocity : {
         x : 0,
         y : 10,
     },
     color : "blue",
+    offset : {
+        x : -50,
+        y : 0,
+    },
 });
 
 console.log(player);
@@ -101,6 +131,16 @@ const keys = {
     ArrowUp:{
         pressed : false,
     },
+}
+
+function rectangularColison( {rectangle1, rectangle2}){
+    return(
+       rectangle1.attackBox.position.x + rectangle1.attackBox.width >= rectangle2.position.x &&
+       rectangle1.attackBox.position.x <= rectangle2.position.x + rectangle2.width &&
+       rectangle1.attackBox.position.y + rectangle1.attackBox.height >= rectangle2.position.y &&
+       rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height &&
+       rectangle1.isAttacking
+    )
 }
 
 // player.draw();
@@ -131,14 +171,31 @@ function animate(){
         player.velocity.x = -2;
     }
     else if(keys.d.pressed && player.lastKey === "d"){
-        player.velocity.x = 2;
+        player.velocity.x = +2;
     }
 
     if(keys.ArrowLeft.pressed && enemy.lastKey === "ArrowLeft"){
         enemy.velocity.x = -2;
     }
     else if(keys.ArrowRight.pressed && enemy.lastKey === "ArrowRight"){
-        enemy.velocity.x = 2;
+        enemy.velocity.x = +2;
+    }
+
+    if(rectangularColison({rectangle1:player, rectangle2:enemy}) &&
+       player.isAttacking)
+    {
+        console.log("hit");
+        player.isAttacking = false;
+        enemy.health -= 20;
+        document.querySelector("#enemyHealth").style.width = enemy.health + "%";
+    }
+    if(rectangularColison({rectangle1:enemy, rectangle2:player}) &&
+       enemy.isAttacking)
+    {
+        console.log("hit");
+        enemy.isAttacking = false;
+        player.health -= 20;
+        document.querySelector("#playerHealth").style.width = player.health + "%";
     }
 }
 
@@ -159,6 +216,9 @@ window.addEventListener("keydown", (event) => {
         case "w":
             player.velocity.y = -10;
             break;
+        case "s":
+            player.attack();
+            break;
         case "ArrowRight":
             keys.ArrowRight.pressed = true;
             enemy.lastKey = "ArrowRight";
@@ -169,6 +229,9 @@ window.addEventListener("keydown", (event) => {
             break;
         case "ArrowUp":
             enemy.velocity.y = -10;
+            break;
+        case "ArrowDown":
+            enemy.attack();
             break;
     }
 })
