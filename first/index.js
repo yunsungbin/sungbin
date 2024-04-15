@@ -4,7 +4,7 @@ const c = canvas.getContext("2d"); //2d로 만들겠다는 코드
 canvas.width = 1024;
 canvas.height = 576;
 
-const gravity = 0.2;
+const gravity = 0.5;
 
 const background = new Sprite({
     position : {
@@ -12,6 +12,16 @@ const background = new Sprite({
         y : 0,
     },
     imageSrc : "/first/img/background.png",
+})
+
+const shop = new Sprite({
+    position : {
+        x : 600,
+        y : 128,
+    },
+    imageSrc : "/first/img/shop.png",
+    scale : 2.75,
+    framesMax : 6,
 })
 
 c.fillRect(0, 0, canvas.width, canvas.height);
@@ -84,6 +94,7 @@ function animate(){
     c.fillRect(0, 0, canvas.width, canvas.height);
 
     background.update();
+    shop.update();
     
     player.update();
     enemy.update();
