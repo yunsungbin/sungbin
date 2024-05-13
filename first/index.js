@@ -67,7 +67,20 @@ const player = new Fighter({
             imageSrc : "/first/img/1p/Attack1.png",
             framesMax : 6,
         },
-    }
+        takeHit : {
+            imageSrc : "/first/img/1p/Take hit.png",
+            framesMax : 4,
+        },
+    },
+    //어택박스 오프셋 설정
+    attackBox : {
+        offset : {
+            x : 100,
+            y : 75,
+        },
+        width : 160,
+        height : 50,
+    },
 });
 
 const enemy = new Fighter({
@@ -112,7 +125,19 @@ const enemy = new Fighter({
             imageSrc : "/first/img/2p/Attack1.png",
             framesMax : 4,
         },
-    }
+        takeHit : {
+            imageSrc : "/first/img/2p/Take hit.png",
+            framesMax : 3,
+        },
+    },
+    attackBox : {
+        offset : {
+            x : -170,
+            y : 75,
+        },
+        width : 170,
+        height : 50,
+    },
 });
 
 console.log(player);
@@ -214,20 +239,30 @@ function animate(){
     }
 
     if(rectangularColison({rectangle1:player, rectangle2:enemy}) &&
-       player.isAttacking)
+       player.isAttacking && player.framesCurrent === 4)
     {
         console.log("hit");
         player.isAttacking = false;
+        enemy.takeHit();
         enemy.health -= 20;
         document.querySelector("#enemyHealth").style.width = enemy.health + "%";
     }
     if(rectangularColison({rectangle1:enemy, rectangle2:player}) &&
-       enemy.isAttacking)
+       enemy.isAttacking && enemy.framesCurrent === 2)
     {
         console.log("hit");
         enemy.isAttacking = false;
-        player.health -= 20;
+        player.takeHit();
+        player.health -= 10;
         document.querySelector("#playerHealth").style.width = player.health + "%";
+    }
+
+    //공격이 실패했을 때
+    if(player.isAttacking && player.framesCurrent === 4){
+        player.isAttacking = false;
+    }
+    if(enemy.isAttacking && enemy.framesCurrent === 2){
+        enemy.isAttacking = false;
     }
 
     if(enemy.health <= 0 || player.health <= 0){
