@@ -187,6 +187,9 @@ function animate(){
     background.update();
     shop.update();
     
+    c.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    c.fillRect(0, 0, canvas.width, canvas.height);
+
     player.update();
     enemy.update();
 
@@ -253,16 +256,23 @@ function animate(){
         player.isAttacking = false;
         enemy.takeHit();
         //enemy.health -= 20;
-        document.querySelector("#enemyHealth").style.width = enemy.health + "%";
+        //document.querySelector("#enemyHealth").style.width = enemy.health + "%";
+        gsap.to("#enemyHealth", {
+            width : enemy.health + "%"
+        })
     }
     if(rectangularColison({rectangle1:enemy, rectangle2:player}) &&
        enemy.isAttacking && enemy.framesCurrent === 2)
     {
         console.log("hit");
         enemy.isAttacking = false;
+        //피격시 함수 실행
         player.takeHit();
         //player.health -= 10;
-        document.querySelector("#playerHealth").style.width = player.health + "%";
+        //document.querySelector("#playerHealth").style.width = player.health + "%";
+        gsap.to("#playerHealth", {
+            width : enemy.health + "%"
+        })
     }
 
     //공격이 실패했을 때

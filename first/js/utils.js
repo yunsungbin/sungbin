@@ -12,13 +12,13 @@ function determineWinner({player, enemy, timerID}){
     clearTimeout(timerID);
     document.querySelector("#displayText").style.display = "flex";
     if(player.health === enemy.health){
-        document.querySelector("#displayText").innerHTML = "무승부";
+        document.querySelector("#displayText").innerHTML = "Draw";
     }
     else if(player.health > enemy.health){
-        document.querySelector("#displayText").innerHTML = "1p 승리";
+        document.querySelector("#displayText").innerHTML = "1p Win";
     }
     else if(player.health < enemy.health){
-        document.querySelector("#displayText").innerHTML = "2p 승리";
+        document.querySelector("#displayText").innerHTML = "2p Win";
     }
 }
 
