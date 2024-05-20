@@ -266,12 +266,12 @@ function animate(){
     {
         console.log("hit");
         enemy.isAttacking = false;
-        //피격시 함수 실행
+        //피격시 함수 실행d
         player.takeHit();
         //player.health -= 10;
         //document.querySelector("#playerHealth").style.width = player.health + "%";
         gsap.to("#playerHealth", {
-            width : enemy.health + "%"
+            width : player.health + "%"
         })
     }
 
